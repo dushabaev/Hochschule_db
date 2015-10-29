@@ -1,0 +1,185 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "StructUnitSpec.h"
+#include "DataModule.h"
+#include <vector>
+#include <string>
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "template"
+#pragma resource "*.dfm"
+TstructUnitSpecForm *structUnitSpecForm;
+//---------------------------------------------------------------------------
+__fastcall TstructUnitSpecForm::TstructUnitSpecForm(TComponent* Owner)
+	: TtemplateForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TstructUnitSpecForm::DBGrid1DrawColumnCell(TObject *Sender, const TRect &Rect,
+		  int DataCol, TColumn *Column, TGridDrawState State)
+{
+	/*
+	if (State.Contains(gdFocused)) {
+		if (Column->Field->FieldName == Lookup->DataField) {
+			Lookup->Left = Rect.Left + DBGrid1->Left + 2;
+			Lookup->Top = Rect.Top + DBGrid1->Top + 2;
+
+			Lookup->Width = Rect.Right - Rect.Left;
+			Lookup->Height = Rect.Bottom - Rect.Top;
+			Lookup->Visible = true;
+		}
+	}
+	*/
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TstructUnitSpecForm::DBGrid1ColExit(TObject *Sender)
+{
+	/*
+	if (DBGrid1->SelectedField->FieldName == Lookup->DataField) {
+		Lookup->Visible = false;
+	}
+	*/
+}
+//---------------------------------------------------------------------------
+
+int addToListBox(TADOQuery* Q, TListBox* LB, UnicodeString storedValue){
+	int valueIndex = -1;
+	Q->ExecSQL();
+	Q->First();
+	while(!Q->Eof) {
+		LB->Items->Add(Q->Fields->Fields[0]->Text);
+		if (Q->Fields->Fields[0]->Text == storedValue) {
+			valueIndex = LB->Items->Count-1;
+		}
+		Q->Next();
+	}
+	return valueIndex;
+};
+
+
+
+void __fastcall TstructUnitSpecForm::FormShow(TObject *Sender)
+{
+	TADOQuery* Q = DM->Query;
+	TADOTable* table = DM->structUnitSpec;
+	Q->Prepared = true;
+
+	// Speciality
+	Q->SQL->Text = "SELECT name FROM edu_level ORDER BY name";
+	Q->Active = true;
+	eduLevelLB->ItemIndex = addToListBox(Q, eduLevelLB, table->FieldByName("edu_level_lookup")->Text);
+
+	Q->SQL->Text = "SELECT name FROM domain ORDER BY name";
+	Q->Active = true;
+	domainLB->ItemIndex = addToListBox(Q, domainLB, table->FieldByName("domain_lookup")->Text);
+
+    updateCourseLB(this);
+
+	// structural unit
+
+	Q->SQL->Text = "SELECT name FROM hochschule ORDER BY name";
+	Q->Active = true;
+	hochschuleLB->ItemIndex = addToListBox(Q, hochschuleLB, table->FieldByName("hochschule_lookup")->Text);
+
+	Q->SQL->Text = "SELECT type FROM struct_unit_type ORDER BY type";
+	Q->Active = true;
+	structUnitTypeLB->ItemIndex = addToListBox(Q, structUnitTypeLB, table->FieldByName("struct_unit_type_lookup")->Text);
+
+	updateStructUnitName(this);
+
+	Memo1->Lines->Add(eduLevelLB->Items->Strings[eduLevelLB->ItemIndex]);
+	Memo1->Lines->Add(domainLB->Items->Strings[domainLB->ItemIndex]);
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TstructUnitSpecForm::hochschuleLBDblClick(TObject *Sender)
+{
+	ShowMessage(IntToStr(hochschuleLB->ItemIndex));
+}
+//---------------------------------------------------------------------------
+
+void updateLBs(TADOQuery* Q, TADOTable* table, std::vector<TListBox*> LB, std::vector<UnicodeString> params, UnicodeString field){
+	LB[0]->Clear();
+
+	Q->Active = false;
+	for (int i = 0; i < params.size(); ++i){
+		Q->Parameters->ParamByName(params[i])->Value = LB[i+1]->Items->Strings[LB[i+1]->ItemIndex];
+	}
+	Q->Active = true;
+	LB[0]->ItemIndex = addToListBox(Q, LB[0], table->FieldByName(field)->Text);
+
+	if (LB[0]->ItemIndex == -1 && LB[0]->Count > 0) {
+		LB[0]->ItemIndex = 0;
+	}
+}
+
+void __fastcall TstructUnitSpecForm::updateCourseLB(TObject *Sender)
+{
+	std::vector<TListBox*> LB;
+	LB.push_back(courseLB);
+	LB.push_back(eduLevelLB);
+	LB.push_back(domainLB);
+
+	std::vector<UnicodeString> params;
+	params.push_back("edu_level");
+	params.push_back("domain");
+
+	updateLBs(
+		DM->courseNameQ,
+		DM->structUnitSpec,
+		LB, params, "course_name"
+	);
+/*
+	courseLB->Clear();
+
+	DM->courseNameQ->Active = false;
+	DM->courseNameQ->Parameters->ParamByName("edu_level")->Value = eduLevelLB->Items->Strings[eduLevelLB->ItemIndex];
+	DM->courseNameQ->Parameters->ParamByName("domain")->Value = domainLB->Items->Strings[domainLB->ItemIndex];
+	DM->courseNameQ->Active = true;
+	courseLB->ItemIndex = addToListBox(DM->courseNameQ, courseLB, DM->structUnitSpec->FieldByName("course_name")->Text);
+
+	if (courseLB->ItemIndex == -1 && courseLB->Count > 0) {
+		courseLB->ItemIndex = 0;
+	}
+*/
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TstructUnitSpecForm::updateStructUnitName(TObject *Sender)
+{
+	std::vector<TListBox*> LB;
+	LB.push_back(structUnitNameLB);
+	LB.push_back(hochschuleLB);
+	LB.push_back(structUnitTypeLB);
+
+	std::vector<UnicodeString> params;
+	params.push_back("hoch");
+	params.push_back("type");
+
+	updateLBs(
+		DM->structUnitNameQ,
+		DM->structUnitSpec,
+		LB, params, "struct_unit_name"
+	);
+/*
+	structUnitNameLB->Clear();
+
+	DM->structUnitNameQ->Active = false;
+	DM->structUnitNameQ->Parameters->ParamByName("hoch")->Value = hochschuleLB->Items->Strings[hochschuleLB->ItemIndex];
+	DM->structUnitNameQ->Parameters->ParamByName("type")->Value = structUnitTypeLB->Items->Strings[structUnitTypeLB->ItemIndex];
+	DM->structUnitNameQ->Active = true;
+	structUnitNameLB->ItemIndex = addToListBox(DM->structUnitNameQ, structUnitNameLB, DM->structUnitSpec->FieldByName("struct_unit_name")->Text);
+
+	if (structUnitNameLB->ItemIndex == -1 && structUnitNameLB->Count > 0) {
+		structUnitNameLB->ItemIndex = 0;
+	}
+*/
+}
+//---------------------------------------------------------------------------
+

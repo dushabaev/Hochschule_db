@@ -1,0 +1,69 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+#include <tchar.h>
+//---------------------------------------------------------------------------
+USEFORM("..\Databases\Speciality.cpp", specialityForm);
+USEFORM("..\Databases\StructUnit.cpp", structUnitForm);
+USEFORM("..\Databases\Settlement.cpp", settlementForm);
+USEFORM("..\Databases\StudyingType.cpp", sutdyingTypeForm);
+USEFORM("..\Databases\template.cpp", templateForm);
+USEFORM("..\Databases\StructUnitType.cpp", structUnitTypeForm);
+USEFORM("..\Databases\StructUnitSpec.cpp", structUnitSpecForm);
+USEFORM("..\Databases\StructUnitSpecStud.cpp", structUnitSpecStudForm);
+USEFORM("..\Databases\HochLevel.cpp", accrLevelForm);
+USEFORM("..\Databases\Hochschule.cpp", hochForm);
+USEFORM("..\Databases\EduLevel.cpp", eduLevelForm);
+USEFORM("..\Databases\DataModule.cpp", Tables); /* TDataModule: File Type */
+USEFORM("..\Databases\Domain.cpp", domainForm);
+USEFORM("..\Databases\Place.cpp", placeForm);
+USEFORM("..\Databases\Region.cpp", regionForm);
+USEFORM("..\Databases\NavigationUnit.cpp", Navigation);
+USEFORM("..\Databases\HochType.cpp", hochTypeForm);
+USEFORM("..\Databases\MainUnit.cpp", MainForm);
+//---------------------------------------------------------------------------
+int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
+{
+	try
+	{
+		Application->Initialize();
+		Application->MainFormOnTaskBar = true;
+		Application->CreateForm(__classid(TNavigation), &Navigation);
+		Application->CreateForm(__classid(TdomainForm), &domainForm);
+		Application->CreateForm(__classid(TMainForm), &MainForm);
+		Application->CreateForm(__classid(TTables), &Tables);
+		Application->CreateForm(__classid(TeduLevelForm), &eduLevelForm);
+		Application->CreateForm(__classid(TtemplateForm), &templateForm);
+		Application->CreateForm(__classid(TsutdyingTypeForm), &sutdyingTypeForm);
+		Application->CreateForm(__classid(TspecialityForm), &specialityForm);
+		Application->CreateForm(__classid(TstructUnitForm), &structUnitForm);
+		Application->CreateForm(__classid(TstructUnitTypeForm), &structUnitTypeForm);
+		Application->CreateForm(__classid(TstructUnitSpecForm), &structUnitSpecForm);
+		Application->CreateForm(__classid(TstructUnitSpecStudForm), &structUnitSpecStudForm);
+		Application->CreateForm(__classid(TsettlementForm), &settlementForm);
+		Application->CreateForm(__classid(TregionForm), &regionForm);
+		Application->CreateForm(__classid(TplaceForm), &placeForm);
+		Application->CreateForm(__classid(ThochTypeForm), &hochTypeForm);
+		Application->CreateForm(__classid(TaccrLevelForm), &accrLevelForm);
+		Application->CreateForm(__classid(ThochForm), &hochForm);
+		Application->Run();
+	}
+	catch (Exception &exception)
+	{
+		Application->ShowException(&exception);
+	}
+	catch (...)
+	{
+		try
+		{
+			throw Exception("");
+		}
+		catch (Exception &exception)
+		{
+			Application->ShowException(&exception);
+		}
+	}
+	return 0;
+}
+//---------------------------------------------------------------------------
