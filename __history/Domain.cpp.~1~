@@ -1,0 +1,91 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "Domain.h"
+#include "DataModule.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TdomainForm *domainForm;
+
+void TdomainForm::fillEdits(){
+	idEdit->Text = Tables->domain->FieldByName("id")->Text;
+	nameEdit->Text = Tables->domain->FieldByName("name")->Text;
+}
+
+void TdomainForm::fillRecord(){
+	Tables->domain->FieldByName("id")->Text = idEdit->Text;
+	Tables->domain->FieldByName("name")->Text = nameEdit->Text;
+}
+
+
+//---------------------------------------------------------------------------
+__fastcall TdomainForm::TdomainForm(TComponent* Owner)
+	: TForm(Owner), minHeight(Height), minWidth(Width)
+{
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TdomainForm::beginBtnClick(TObject *Sender)
+{
+	Tables->domain->First();
+	this->fillEdits();
+}
+//---------------------------------------------------------------------------
+
+
+
+void __fastcall TdomainForm::nextBtnClick(TObject *Sender)
+{
+	Tables->domain->Next();
+	this->fillEdits();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TdomainForm::priorBtnClick(TObject *Sender)
+{
+	Tables->domain->Prior();
+	this->fillEdits();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TdomainForm::addBtnClick(TObject *Sender)
+{
+	Tables->domain->Insert();
+	this->fillRecord();
+	Tables->domain->Post();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TdomainForm::deleteBtnClick(TObject *Sender)
+{
+	Tables->domain->Delete();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TdomainForm::endBtnClick(TObject *Sender)
+{
+	Tables->domain->Last();
+	this->fillEdits();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TdomainForm::applyBtnClick(TObject *Sender)
+{
+	Tables->domain->Edit();
+	this->fillRecord();
+	Tables->domain->Post();
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TdomainForm::FormShow(TObject *Sender)
+{
+	this->beginBtn->Click();
+	this->fillEdits();
+}
+//---------------------------------------------------------------------------
+

@@ -1,0 +1,60 @@
+//---------------------------------------------------------------------------
+
+#ifndef StructUnitSpecH
+#define StructUnitSpecH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "template.h"
+#include <Data.DB.hpp>
+#include <Vcl.DBCtrls.hpp>
+#include <Vcl.DBGrids.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Grids.hpp>
+#include <Vcl.ComCtrls.hpp>
+//---------------------------------------------------------------------------
+class TstructUnitSpecForm : public TtemplateForm
+{
+__published:	// IDE-managed Components
+	TListBox *eduLevelLB;
+	TLabel *Label1;
+	TListBox *domainLB;
+	TLabel *Label2;
+	TListBox *courseLB;
+	TLabel *Label3;
+	TListBox *hochschuleLB;
+	TLabel *Label4;
+	TListBox *structUnitTypeLB;
+	TLabel *Label5;
+	TListBox *structUnitNameLB;
+	TLabel *Label6;
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall updateCourseLB(TObject *Sender);
+	void __fastcall updateStructUnitNameLB(TObject *Sender);
+	void __fastcall Button1Click(TObject *Sender);
+
+
+
+
+private:	// User declarations
+public:		// User declarations
+	__fastcall TstructUnitSpecForm(TComponent* Owner);
+	void fillInEduLevelLB();
+	void fillInDomainLB();
+
+	void fillInHochschuleLB();
+	void fillInStructUnitTypeLB();
+
+	void refreshEduLevelLB(TDataSet* DataSet);
+	void refreshDomainLB(TDataSet* DataSet);
+
+	void refreshHochschuleLB(TDataSet* DataSet);
+	void refreshStructUnitTypeLB(TDataSet* DataSet);
+};
+
+//---------------------------------------------------------------------------
+extern PACKAGE TstructUnitSpecForm *structUnitSpecForm;
+//---------------------------------------------------------------------------
+#endif

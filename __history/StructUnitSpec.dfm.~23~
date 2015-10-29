@@ -1,0 +1,139 @@
+inherited structUnitSpecForm: TstructUnitSpecForm
+  Caption = 'Structural unit speciality'
+  ClientHeight = 614
+  ClientWidth = 1110
+  OnShow = FormShow
+  ExplicitWidth = 1126
+  ExplicitHeight = 653
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel [0]
+    Left = 24
+    Top = 13
+    Width = 72
+    Height = 13
+    Caption = 'Education level'
+  end
+  object Label2: TLabel [1]
+    Left = 296
+    Top = 13
+    Width = 35
+    Height = 13
+    Caption = 'Domain'
+  end
+  object Label3: TLabel [2]
+    Left = 600
+    Top = 13
+    Width = 34
+    Height = 13
+    Caption = 'Course'
+  end
+  object Label4: TLabel [3]
+    Left = 24
+    Top = 133
+    Width = 54
+    Height = 13
+    Caption = 'Hochschule'
+  end
+  object Label5: TLabel [4]
+    Left = 296
+    Top = 133
+    Width = 24
+    Height = 13
+    Caption = 'Type'
+  end
+  object Label6: TLabel [5]
+    Left = 600
+    Top = 133
+    Width = 27
+    Height = 13
+    Caption = 'Name'
+  end
+  inherited DBGrid1: TDBGrid
+    Left = 24
+    Top = 400
+    Width = 697
+    Height = 169
+    Align = alNone
+    DataSource = DM.structUnitSpecSource
+    OnColExit = DBGrid1ColExit
+    OnDrawColumnCell = DBGrid1DrawColumnCell
+  end
+  inherited DBNavigator1: TDBNavigator
+    Top = 586
+    Width = 1100
+    DataSource = DM.structUnitSpecSource
+    VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbDelete, nbPost, nbCancel, nbRefresh]
+    Hints.Strings = ()
+    ExplicitTop = 586
+    ExplicitWidth = 1100
+  end
+  object eduLevelLB: TListBox
+    Left = 24
+    Top = 32
+    Width = 217
+    Height = 81
+    ItemHeight = 13
+    TabOrder = 2
+    OnClick = updateCourseLB
+  end
+  object domainLB: TListBox
+    Left = 296
+    Top = 32
+    Width = 257
+    Height = 81
+    ItemHeight = 13
+    TabOrder = 3
+    OnClick = updateCourseLB
+  end
+  object courseLB: TListBox
+    Left = 600
+    Top = 32
+    Width = 345
+    Height = 81
+    ItemHeight = 13
+    TabOrder = 4
+  end
+  object hochschuleLB: TListBox
+    Left = 24
+    Top = 152
+    Width = 249
+    Height = 224
+    ItemHeight = 13
+    ScrollWidth = 1125
+    TabOrder = 5
+    OnClick = updateStructUnitNameLB
+  end
+  object structUnitTypeLB: TListBox
+    Left = 296
+    Top = 152
+    Width = 257
+    Height = 81
+    ItemHeight = 13
+    TabOrder = 6
+  end
+  object structUnitNameLB: TListBox
+    Left = 600
+    Top = 152
+    Width = 345
+    Height = 81
+    ItemHeight = 13
+    TabOrder = 7
+  end
+  object Button1: TButton
+    Left = 976
+    Top = 56
+    Width = 113
+    Height = 25
+    Caption = 'Apply speciality'
+    TabOrder = 8
+  end
+  object Button2: TButton
+    Left = 976
+    Top = 184
+    Width = 113
+    Height = 25
+    Caption = 'Apply structural unit'
+    TabOrder = 9
+  end
+end
