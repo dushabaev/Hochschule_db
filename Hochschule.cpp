@@ -10,17 +10,25 @@
 #pragma resource "*.dfm"
 using namespace std;
 ThochForm *hochForm;
-/*
-template <typename T>
-T min(T a, T b){
-	return a <= b ? a : b;
+
+void fetchQuery(TADOQuery* Q, TComboBox** items, unsigned int count) {
+	Q->Active = true;
+	for (Q->First(); !Q->Eof; Q->Next())
+		for (unsigned int i = 0; i < count; ++i) {
+			UnicodeString record = Q->Fields->Fields[0]->AsString;
+			if (items[i]->Items->IndexOf(record) == -1)
+				items[i]->Items->Add(record);
+		}
 }
 
-template <typename T>
-T max(T a, T b){
-	return !min(a, b);
+bool itemExist(TComboBox* box, UnicodeString item) {
+	return box->Items->IndexOf(item) != -1;
 }
-*/
+
+UnicodeString selectedItem(TComboBox* box) {
+	return box->Items->Strings[box->ItemIndex];
+}
+
 // ---------------------------------------------------------------------------
 __fastcall ThochForm::ThochForm(TComponent* Owner) : TtemplateForm(Owner) {
 }
@@ -63,6 +71,8 @@ void ThochForm::refreshSettlement(vector<TComboBox*>CB, UnicodeString value) {
 	TADOQuery* Q = DM->Query;
 	Q->SQL->Text =
 		"SELECT settlement.name FROM place JOIN (settlement, region) ON (settlement_id=settlement.id AND region_id = region.id) WHERE region.name=:region ORDER BY settlement.name";
+	// Comment to find
+	Q->Parameters->ParseSQL(Q->SQL->Text, true);
 	Q->Parameters->ParamByName("region")->DataType = ftWideString;
 	Q->Parameters->ParamByName("region")->Value = value;
 	Q->Active = true;
@@ -78,8 +88,7 @@ void ThochForm::refreshSettlement(vector<TComboBox*>CB, UnicodeString value) {
 void __fastcall ThochForm::FormCreate(TObject *Sender) {
 	partialKeyCheckBox->Checked = true;
 	caseIsnensetiveCheckBox->Checked = true;
-	LOpts << loPartialKey;
-	LOpts << loCaseInsensitive;
+	LOpts << loPartialKey << loCaseInsensitive;
 	FOpts << foCaseInsensitive;
 
 	TLabel* label = new TLabel(ScrollBox1);
@@ -89,7 +98,7 @@ void __fastcall ThochForm::FormCreate(TObject *Sender) {
 	label->Caption = "From";
 	label->Parent = ScrollBox1;
 	label->Left = 11;
-	label->Top = 5;
+	label->Top = 22;
 	label->Name += GetTickCount();
 	labels.push_back(label);
 
@@ -97,13 +106,14 @@ void __fastcall ThochForm::FormCreate(TObject *Sender) {
 	label->Parent = ScrollBox1;
 	label->Caption = "To";
 	label->Left = 99;
-	label->Top = 5;
+	label->Top = 22;
 	label->Name += GetTickCount();
+	label->Tag = 1;
 	labels.push_back(label);
 
 	box->Parent = ScrollBox1;
 	box->Left = 41;
-	box->Top = 3;
+	box->Top = 20;
 	box->Name += GetTickCount();
 	box->Width = 40;
 	comboBoxes.push_back(box);
@@ -111,14 +121,15 @@ void __fastcall ThochForm::FormCreate(TObject *Sender) {
 	box = new TComboBox(ScrollBox1);
 	box->Parent = ScrollBox1;
 	box->Left = 117;
-	box->Top = 3;
+	box->Top = 20;
 	box->Name += GetTickCount();
 	box->Width = 40;
+	box->Tag = 1;
 	comboBoxes.push_back(box);
 
 	btn->Parent = ScrollBox1;
 	btn->Left = 167;
-	btn->Top = 5;
+	btn->Top = 22;
 	btn->Name += GetTickCount();
 	btn->Width = 50;
 	btn->Height = 17;
@@ -250,21 +261,44 @@ void __fastcall ThochForm::filterChange(TObject *Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall ThochForm::delButtonClick(TObject *Sender) {
-	for (int i = 0; i < 2; i++) {
-		delete labels.back();
-		labels.pop_back();
+	TButton* btn = (TButton*)Sender;
+	addButton->Top -= 30;
 
-		delete comboBoxes.back();
-		comboBoxes.pop_back();
+	for (int i = buttons.size() - 1; i > btn->Tag; --i) {
+		labels[i * 2]->Top = labels[(i - 1) * 2]->Top;
+		labels[i * 2]->Tag -= 2;
+
+		labels[i * 2 + 1]->Top = labels[(i - 1) * 2 + 1]->Top;
+		labels[i * 2 + 1]->Tag -= 2;
+
+		comboBoxes[i * 2]->Top = comboBoxes[(i - 1) * 2]->Top;
+		comboBoxes[i * 2]->Tag -= 2;
+
+		comboBoxes[i * 2 + 1]->Top = comboBoxes[(i - 1) * 2 + 1]->Top;
+		comboBoxes[i * 2 + 1]->Tag -= 2;
+
+		buttons[i]->Top = buttons[i - 1]->Top;
+		buttons[i]->Tag -= 1;
 	}
-	delete buttons.back();
-	buttons.pop_back();
+
+	delete labels[btn->Tag * 2];
+	labels.erase(labels.begin() + btn->Tag*2);
+
+	delete labels[btn->Tag * 2];
+	labels.erase(labels.begin() + btn->Tag*2);
+
+	delete comboBoxes[btn->Tag * 2];
+	comboBoxes.erase(comboBoxes.begin() + btn->Tag*2);
+
+	delete comboBoxes[btn->Tag * 2];
+	comboBoxes.erase(comboBoxes.begin() + btn->Tag*2);
+
+	delete buttons[btn->Tag];
+	buttons.erase(buttons.begin() + btn->Tag);
 
 	if (buttons.size() == 1) {
 		buttons[0]->Enabled = false;
 	}
-
-	addButton->Top -= 30;
 }
 
 void __fastcall ThochForm::addButtonClick(TObject *Sender) {
@@ -277,6 +311,7 @@ void __fastcall ThochForm::addButtonClick(TObject *Sender) {
 	label->Left = labels[labels.size() - 2]->Left;
 	label->Top = labels[labels.size() - 2]->Top + 30;
 	label->Name += IntToStr((int)GetTickCount());
+	label->Tag = labels[labels.size() - 2]->Tag + 2;
 	labels.push_back(label);
 
 	label = new TLabel(ScrollBox1);
@@ -285,12 +320,15 @@ void __fastcall ThochForm::addButtonClick(TObject *Sender) {
 	label->Left = labels[labels.size() - 2]->Left;
 	label->Top = labels[labels.size() - 2]->Top + 30;
 	label->Name += IntToStr((int)GetTickCount());
+	label->Tag = labels[labels.size() - 2]->Tag + 2;
 	labels.push_back(label);
 
 	box->Parent = ScrollBox1;
 	box->Left = comboBoxes[comboBoxes.size() - 2]->Left;
 	box->Top = comboBoxes[comboBoxes.size() - 2]->Top + 30;
+	box->Tag = comboBoxes[comboBoxes.size() - 2]->Tag + 2;
 	box->Name += IntToStr((int)GetTickCount());
+	box->Tag = comboBoxes[comboBoxes.size() - 2]->Tag + 2;
 	box->Width = 40;
 	comboBoxes.push_back(box);
 
@@ -298,7 +336,9 @@ void __fastcall ThochForm::addButtonClick(TObject *Sender) {
 	box->Parent = ScrollBox1;
 	box->Left = comboBoxes[comboBoxes.size() - 2]->Left;
 	box->Top = comboBoxes[comboBoxes.size() - 2]->Top + 30;
+	box->Tag = comboBoxes[comboBoxes.size() - 2]->Tag + 2;
 	box->Name += IntToStr((int)GetTickCount());
+	box->Tag = comboBoxes[comboBoxes.size() - 2]->Tag + 2;
 	box->Width = 40;
 	comboBoxes.push_back(box);
 
@@ -310,66 +350,73 @@ void __fastcall ThochForm::addButtonClick(TObject *Sender) {
 	btn->Height = 17;
 	btn->Caption = buttons.back()->Caption;
 	btn->OnClick = buttons.back()->OnClick;
+	btn->Tag = buttons.size();
 	buttons.back()->Enabled = true;
 	buttons.push_back(btn);
 
 	addButton->Top += 30;
+	f(comboBoxes[comboBoxes.size() - 2], comboBoxes[comboBoxes.size() - 1]);
+}
 
+void ThochForm::f(TComboBox* lowBound, TComboBox* highBound) {
+	TADOQuery* Q = DM->Query;
+	Q->SQL->Text =
+		"SELECT MIN(accr_level_low) minL, MAX(accr_level_low) maxL, MIN(accr_level_high) minH, MAX(accr_level_high) maxH FROM hochschule";
+	Q->Active = true;
+	Q->First();
+	int minAccrLevel = 1, maxAccrLevel = 1, minL =
+		Q->Fields->Fields[0]->AsInteger, maxL = Q->Fields->Fields[1]->AsInteger,
+		minH = Q->Fields->Fields[2]->AsInteger, maxH =
+		Q->Fields->Fields[3]->AsInteger;
+
+	minAccrLevel = min(min(minL, minH), minAccrLevel);
+	maxAccrLevel = max(max(maxL, maxH), maxAccrLevel);
+
+	for (int i = minAccrLevel; i <= maxAccrLevel; i++) {
+		if (!itemExist(lowBound, IntToStr(i)))
+			lowBound->Items->Add(IntToStr(i));
+
+		if (!itemExist(highBound, IntToStr(i)))
+			highBound->Items->Add(IntToStr(i));
+	}
+	lowBound->ItemIndex = minAccrLevel - 1;
+	highBound->ItemIndex = maxAccrLevel - 1;
+	lowBound->OnChange = lowBoundChange;
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall ThochForm::FormShow(TObject *Sender) {
 	TADOQuery* Q = DM->Query;
+
+	TComboBox* comboBox[] = {region, regionFilter, settlement, settlementFilter
+	};
+
 	Q->SQL->Text = "SELECT name FROM region ORDER BY name";
-	Q->Active = true;
-
-	for (Q->First(); !Q->Eof; Q->Next()) {
-		UnicodeString res = Q->FieldByName("name")->AsString;
-
-		if (regionFilter->Items->IndexOf(res) == -1)
-			regionFilter->Items->Add(res);
-
-		if (region->Items->IndexOf(res) == -1)
-			region->Items->Add(res);
-
-	}
+	fetchQuery(Q, comboBox, 2);
 	regionFilter->ItemIndex = 0;
 	region->ItemIndex = region->Items->IndexOf
 		(DBGrid1->DataSource->DataSet->FieldByName("region")->AsString);
-	updateSettlement();
-	updateSettlementFilter();
 
+	// ------------------------------------------------------------------------------
+	Q->SQL->Text =
+		"SELECT settlement.name FROM place JOIN (settlement, region) ON (settlement_id=settlement.id AND region_id = region.id) WHERE region.name=:Region ORDER BY settlement.name";
+	for (unsigned int i = 0; i < 2; i++) {
+		Q->Parameters->ParamByName("Region")->Value = selectedItem(comboBox[i]);
+		fetchQuery(Q, &comboBox[i + 2], 1);
+	}
+	settlementFilter->ItemIndex = 0;
+	settlement->ItemIndex = settlement->Items->IndexOf
+		(DBGrid1->DataSource->DataSet->FieldByName("settlement")->AsString);
+
+	// ------------------------------------------------------------------------------
 	Q->SQL->Text = "SELECT type FROM hoch_type ORDER BY type";
-	Q->Active = true;
-	for (Q->First(); !Q->Eof; Q->Next()) {
-		UnicodeString res = Q->FieldByName("type")->AsString;
-		if (hochTypeFilter->Items->IndexOf(res) == -1)
-			hochTypeFilter->Items->Add(res);
-	}
+	fetchQuery(Q, &hochTypeFilter, 1);
+	hochTypeFilter->ItemIndex = 0;
 
-    Q->SQL->Text = "select min(accr_level_low) minL, max(accr_level_low) maxL, min(accr_level_high) minH, max(accr_level_high) maxH from hochschule";
-	Q->Active = true;
-	int minI=1, maxI=1;
-	for (Q->First(); !Q->Eof; Q->Next()) {
-		int 
-			minL = Q->FieldByName("minL")->AsInteger, 
-			maxL = Q->FieldByName("maxL")->AsInteger, 
-			minH = Q->FieldByName("maxL")->AsInteger, 
-			maxH = Q->FieldByName("maxH")->AsInteger;
-		minI = min(min(minL, minH), minI);
-		maxI = max(max(maxL, maxH), maxI);		
-	}
+	// ------------------------------------------------------------------------------
+	f(lowBound, highBound);
+	f(comboBoxes[comboBoxes.size() - 2], comboBoxes[comboBoxes.size() - 1]);
 
-	for (int i = minI; i <= maxI; i++) {
-		if (lowBound->Items->IndexOf(IntToStr(i)) == -1) {
-			lowBound->Items->Add(IntToStr(i));
-		}
-		
-		if (highBound->Items->IndexOf(IntToStr(i)) == -1) {
-			highBound->Items->Add(IntToStr(i));
-		}
-	}
-		
 }
 // ---------------------------------------------------------------------------
 
@@ -381,11 +428,29 @@ void __fastcall ThochForm::autoFilterCheckBoxClick(TObject *Sender) {
 }
 // ---------------------------------------------------------------------------
 
-
-
 void __fastcall ThochForm::settlementCheckBoxClick(TObject *Sender) {
 	regionCheckBox->Checked = true;
 }
+
 // ---------------------------------------------------------------------------
+void __fastcall ThochForm::lowBoundChange(TObject *Sender) {
+	TComboBox *sender = (TComboBox*)Sender, *cmb = sender->Tag == -1 ?
+		highBound : comboBoxes[sender->Tag + 1];
+    int index = cmb->ItemIndex;
+	cmb->Clear();
+	for (int i = StrToInt(selectedItem(sender)); i <= sender->Items->Count; i++)
+	{
+		cmb->Items->Add(IntToStr(i));
+	}
 
+	cmb->ItemIndex = index >= sender->ItemIndex ? sender->ItemIndex : index;
 
+	if (sender->Tag == -1) {
+		DBGrid1->DataSource->DataSet->FieldByName("accr_level_low")->AsString =
+			selectedItem(sender);
+
+		DBGrid1->DataSource->DataSet->FieldByName("accr_level_high")->AsString =
+			selectedItem(cmb);
+	}
+}
+// ---------------------------------------------------------------------------

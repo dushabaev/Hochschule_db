@@ -4,9 +4,8 @@ inherited hochForm: ThochForm
   ClientWidth = 1066
   OnCreate = FormCreate
   OnShow = FormShow
-  ExplicitLeft = -295
   ExplicitWidth = 1082
-  ExplicitHeight = 648
+  ExplicitHeight = 647
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel [0]
@@ -74,8 +73,8 @@ inherited hochForm: ThochForm
     DataSource = DM.hochschuleSource
     Hints.Strings = ()
     TabOrder = 4
-    ExplicitTop = 385
-    ExplicitWidth = 790
+    ExplicitTop = 581
+    ExplicitWidth = 1056
   end
   object hochSearchBox: TSearchBox
     AlignWithMargins = True
@@ -87,7 +86,6 @@ inherited hochForm: ThochForm
     TabOrder = 0
     OnChange = hochSearchBoxChange
     OnInvokeSearch = hochSearchBoxInvokeSearch
-    ExplicitWidth = 794
   end
   object region: TComboBox
     Left = 338
@@ -163,7 +161,6 @@ inherited hochForm: ThochForm
     Anchors = [akLeft, akTop, akBottom]
     Caption = 'Hochschule'#39's filters'
     TabOrder = 6
-    ExplicitHeight = 401
     DesignSize = (
       233
       466)
@@ -202,7 +199,7 @@ inherited hochForm: ThochForm
     end
     object accrLevelFilterCheckBox: TCheckBox
       Left = 48
-      Top = 136
+      Top = 143
       Width = 118
       Height = 15
       Caption = 'Accrediatational level'
@@ -227,24 +224,30 @@ inherited hochForm: ThochForm
       ParentFont = False
       TabOrder = 5
       OnClick = applyFiltersBtnClick
-      ExplicitTop = 198
     end
     object ScrollBox1: TScrollBox
       Left = 3
-      Top = 152
+      Top = 161
       Width = 227
-      Height = 277
+      Height = 268
       Anchors = [akLeft, akTop, akBottom]
       TabOrder = 6
-      ExplicitHeight = 81
       object addButton: TButton
         Left = 83
-        Top = 30
+        Top = 47
         Width = 28
         Height = 17
         Caption = 'Add'
         TabOrder = 0
         OnClick = addButtonClick
+      end
+      object equalRanges: TCheckBox
+        Left = 11
+        Top = 1
+        Width = 108
+        Height = 17
+        Caption = 'Fully equal ranges'
+        TabOrder = 1
       end
     end
     object typeCheckBox: TCheckBox
@@ -274,11 +277,13 @@ inherited hochForm: ThochForm
     end
   end
   object lowBound: TComboBox
+    Tag = -1
     Left = 798
-    Top = 62
+    Top = 65
     Width = 46
     Height = 21
     TabOrder = 7
+    OnChange = lowBoundChange
   end
   object highBound: TComboBox
     Left = 940

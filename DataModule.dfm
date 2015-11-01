@@ -582,39 +582,16 @@ object DM: TDM
     Top = 264
   end
   object Query: TADOQuery
-    Active = True
     Connection = ADOConnection
     CursorType = ctStatic
     DataSource = structUnitSpecSource
-    Parameters = <
-      item
-        Name = 'edu_level'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 2
-        Precision = 255
-        Size = 255
-        Value = #1041#1072#1082#1072#1083#1072#1074#1088
-      end
-      item
-        Name = 'domain'
-        Attributes = [paNullable]
-        DataType = ftWideString
-        NumericScale = 2
-        Precision = 255
-        Size = 255
-        Value = #1045#1082#1086#1085#1086#1084#1110#1082#1072' '#1090#1072' '#1087#1110#1076#1087#1088#1080#1108#1084#1085#1080#1094#1090#1074#1086
-      end>
+    Parameters = <>
     Prepared = True
-    SQL.Strings = (
-      
-        'SELECT speciality.name FROM speciality JOIN (domain, edu_level) ' +
-        'ON (domain.id=domain_id and edu_level_id = edu_level.id) WHERE (' +
-        'edu_level.name=:edu_level AND domain.name=:domain) ORDER BY name')
     Left = 32
     Top = 312
   end
   object courseNameQ: TADOQuery
+    Active = True
     Connection = ADOConnection
     CursorType = ctStatic
     Parameters = <
@@ -646,6 +623,7 @@ object DM: TDM
     Top = 336
   end
   object structUnitNameQ: TADOQuery
+    Active = True
     Connection = ADOConnection
     CursorType = ctStatic
     Parameters = <
@@ -679,6 +657,7 @@ object DM: TDM
     Top = 336
   end
   object specialityQ: TADOQuery
+    Active = True
     Connection = ADOConnection
     CursorType = ctStatic
     Parameters = <
@@ -720,6 +699,7 @@ object DM: TDM
     Top = 344
   end
   object structUnitQ: TADOQuery
+    Active = True
     Connection = ADOConnection
     CursorType = ctStatic
     Parameters = <
@@ -766,6 +746,7 @@ object DM: TDM
     Connection = ADOConnection
     CursorType = ctStatic
     Parameters = <>
+    Prepared = True
     SQL.Strings = (
       'SELECT'
       '    p.id AS place_id,'

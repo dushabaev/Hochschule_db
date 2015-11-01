@@ -50,6 +50,7 @@ __published:	// IDE-managed Components
 	TComboBox *highBound;
 	TLabel *Label4;
 	TLabel *Label5;
+	TCheckBox *equalRanges;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall regionChange(TObject *Sender);
 	void __fastcall settlementChange(TObject *Sender);
@@ -66,12 +67,16 @@ __published:	// IDE-managed Components
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall autoFilterCheckBoxClick(TObject *Sender);
 	void __fastcall settlementCheckBoxClick(TObject *Sender);
+	void __fastcall lowBoundChange(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
 	__fastcall ThochForm(TComponent* Owner);
 	void updateSettlement();
 	void updateSettlementFilter();
 	void refreshSettlement(std::vector<TComboBox*>, UnicodeString);
+
+    void f(TComboBox* lowBound, TComboBox* highBound);
+
 	int getPlaceId();
 	TLocateOptions LOpts;
 	TFilterOptions FOpts;

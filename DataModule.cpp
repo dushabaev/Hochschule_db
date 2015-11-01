@@ -79,30 +79,29 @@ void __fastcall TDM::hochschuleFilterRecord(TDataSet *DataSet, bool &Accept) {
 		if (hochForm->FOpts.Contains(foCaseInsensitive))
 			if (hochForm->FOpts.Contains(foNoPartialCompare))
 				Accept = DataSet->FieldByName("name")->AsString.UpperCase()
-					== hochForm->hochSearchBox->Text.UpperCase() || hochForm->hochSearchBox->Text == "";
+					== hochForm->hochSearchBox->Text.UpperCase() ||
+					hochForm->hochSearchBox->Text == "";
 			else
 				Accept = DataSet->FieldByName("name")->AsString.UpperCase().Pos
-					(hochForm->hochSearchBox->Text.UpperCase()) == 1 || hochForm->hochSearchBox->Text == "";
+					(hochForm->hochSearchBox->Text.UpperCase()) == 1 ||
+					hochForm->hochSearchBox->Text == "";
 
+		else if (hochForm->FOpts.Contains(foNoPartialCompare))
+			Accept = DataSet->FieldByName("name")
+				->AsString == hochForm->hochSearchBox->Text ||
+				hochForm->hochSearchBox->Text == "";
 		else
-			if (hochForm->FOpts.Contains(foNoPartialCompare))
-				Accept = DataSet->FieldByName("name")->AsString
-					== hochForm->hochSearchBox->Text || hochForm->hochSearchBox->Text == "";
-			else
-				Accept = DataSet->FieldByName("name")->AsString.Pos
-					(hochForm->hochSearchBox->Text) == 0 || hochForm->hochSearchBox->Text == "";
+			Accept = DataSet->FieldByName("name")->AsString.Pos
+				(hochForm->hochSearchBox->Text) == 0 ||
+				hochForm->hochSearchBox->Text == "";
 
-	Accept =
-		Accept &&
-		(!hochForm->regionCheckBox->Checked ||
-			DataSet->FieldByName("region")->AsString ==
-			hochForm->regionFilter->Text) &&
-		(!hochForm->settlementCheckBox->Checked ||
-			DataSet->FieldByName("settlement")->AsString ==
-			hochForm->settlementFilter->Text) &&
-		(!hochForm->typeCheckBox->Checked  ||
-			DataSet->FieldByName("hoch_type_lookup")->AsString ==
-			hochForm->hochTypeFilter->Text);
+	Accept = Accept && (!hochForm->regionCheckBox->Checked ||
+		DataSet->FieldByName("region")
+		->AsString == hochForm->regionFilter->Text) &&
+		(!hochForm->settlementCheckBox->Checked || DataSet->FieldByName
+		("settlement")->AsString == hochForm->settlementFilter->Text) &&
+		(!hochForm->typeCheckBox->Checked || DataSet->FieldByName
+		("hoch_type_lookup")->AsString == hochForm->hochTypeFilter->Text);
 	if (Accept) {
 		++hochFilterRows;
 	}
@@ -110,13 +109,17 @@ void __fastcall TDM::hochschuleFilterRecord(TDataSet *DataSet, bool &Accept) {
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TDM::hochschuleAfterScroll(TDataSet * DataSet)
-{ThochForm* form = hochForm;
+void __fastcall TDM::hochschuleAfterScroll(TDataSet * DataSet) {
+	ThochForm* form = hochForm;
 	if (!form)
 		return;
 
-	form->region->ItemIndex = form->region->Items->IndexOf(DataSet->FieldByName
-		("region")->AsString);
-	form->updateSettlementFilter();
+	form->region->ItemIndex = form->region->Items->IndexOf
+		(DataSet->FieldByName("region")->AsString);
+	form->updateSettlement();
+
+	form->lowBound->ItemIndex = DataSet->FieldByName("accr_level_low")->AsInteger-1;
+	form->lowBoundChange(form->lowBound);
+
 }
 // ---------------------------------------------------------------------------

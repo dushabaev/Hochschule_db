@@ -7,13 +7,14 @@
 USEFORM("Speciality.cpp", specialityForm);
 USEFORM("StructUnit.cpp", structUnitForm);
 USEFORM("Settlement.cpp", settlementForm);
-USEFORM("Place.cpp", placeForm);
 USEFORM("Region.cpp", regionForm);
+USEFORM("searchSettings.cpp", searchSettingsForm);
 USEFORM("StudyingType.cpp", sutdyingTypeForm);
 USEFORM("template.cpp", templateForm);
 USEFORM("StructUnitType.cpp", structUnitTypeForm);
 USEFORM("StructUnitSpec.cpp", structUnitSpecForm);
 USEFORM("StructUnitSpecStud.cpp", structUnitSpecStudForm);
+USEFORM("Place.cpp", placeForm);
 USEFORM("HochLevel.cpp", accrLevelForm);
 USEFORM("Hochschule.cpp", hochForm);
 USEFORM("EduLevel.cpp", eduLevelForm);
@@ -22,7 +23,6 @@ USEFORM("Domain.cpp", domainForm);
 USEFORM("MainUnit.cpp", MainForm);
 USEFORM("NavigationUnit.cpp", Navigation);
 USEFORM("HochType.cpp", hochTypeForm);
-USEFORM("searchSettings.cpp", searchSettingsForm);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -30,10 +30,11 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 	{
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
+		Application->CreateForm(__classid(TDM), &DM);
 		Application->CreateForm(__classid(TNavigation), &Navigation);
+		Application->CreateForm(__classid(ThochForm), &hochForm);
 		Application->CreateForm(__classid(TdomainForm), &domainForm);
 		Application->CreateForm(__classid(TMainForm), &MainForm);
-		Application->CreateForm(__classid(TDM), &DM);
 		Application->CreateForm(__classid(TeduLevelForm), &eduLevelForm);
 		Application->CreateForm(__classid(TtemplateForm), &templateForm);
 		Application->CreateForm(__classid(TsutdyingTypeForm), &sutdyingTypeForm);
@@ -47,7 +48,6 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->CreateForm(__classid(TplaceForm), &placeForm);
 		Application->CreateForm(__classid(ThochTypeForm), &hochTypeForm);
 		Application->CreateForm(__classid(TaccrLevelForm), &accrLevelForm);
-		Application->CreateForm(__classid(ThochForm), &hochForm);
 		Application->CreateForm(__classid(TsearchSettingsForm), &searchSettingsForm);
 		Application->Run();
 	}
