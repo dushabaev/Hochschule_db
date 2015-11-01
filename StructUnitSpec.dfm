@@ -18,7 +18,7 @@ inherited structUnitSpecForm: TstructUnitSpecForm
   object Label2: TLabel [1]
     Left = 432
     Top = 245
-    Width = 115
+    Width = 35
     Height = 13
     Anchors = [akLeft, akTop, akRight]
     Caption = 'Domain'

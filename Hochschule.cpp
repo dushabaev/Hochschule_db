@@ -66,11 +66,11 @@ void ThochForm::refreshSettlement(vector<TComboBox*>CB, UnicodeString value) {
 	Q->Parameters->ParamByName("region")->DataType = ftWideString;
 	Q->Parameters->ParamByName("region")->Value = value;
 	Q->Active = true;
-	for (int i = 0; i < CB.size(); ++i)
+	for (unsigned int i = 0; i < CB.size(); ++i)
 		CB[i]->Items->Clear();
 
 	for (Q->First(); !Q->Eof; Q->Next()) {
-		for (int i = 0; i < CB.size(); ++i)
+		for (unsigned int i = 0; i < CB.size(); ++i)
 			CB[i]->Items->Add(Q->FieldByName("name")->AsString);
 	}
 }
@@ -349,7 +349,7 @@ void __fastcall ThochForm::FormShow(TObject *Sender) {
 
     Q->SQL->Text = "select min(accr_level_low) minL, max(accr_level_low) maxL, min(accr_level_high) minH, max(accr_level_high) maxH from hochschule";
 	Q->Active = true;
-	int minI=0, maxI=0;
+	int minI=1, maxI=1;
 	for (Q->First(); !Q->Eof; Q->Next()) {
 		int 
 			minL = Q->FieldByName("minL")->AsInteger, 

@@ -29,7 +29,7 @@ int addToListBox(TADOQuery* Q, TListBox* LB, UnicodeString storedValue){
 
 void execQueryWithParams(TADOQuery* Q, std::vector<TListBox*> LB, std::vector<UnicodeString> params){
 	Q->Active = false;
-	for (int i = 0; i < params.size(); ++i){
+	for (unsigned int i = 0; i < params.size(); ++i){
 		Q->Parameters->ParamByName(params[i])->Value = LB[i]->Items->Strings[LB[i]->ItemIndex];
 	}
 	Q->Active = true;
@@ -103,7 +103,6 @@ void TstructUnitSpecForm::refreshStructUnitTypeLB(TDataSet* DataSet){
 void __fastcall TstructUnitSpecForm::FormShow(TObject *Sender)
 {
 	TADOQuery* Q = DM->Query;
-	TADOTable* table = DM->structUnitSpec;
 	Q->Prepared = true;
 
 	// Speciality
