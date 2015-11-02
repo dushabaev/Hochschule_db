@@ -68,6 +68,7 @@ __published:	// IDE-managed Components
 	void __fastcall autoFilterCheckBoxClick(TObject *Sender);
 	void __fastcall settlementCheckBoxClick(TObject *Sender);
 	void __fastcall lowBoundChange(TObject *Sender);
+	void __fastcall highBoundChange(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
 	__fastcall ThochForm(TComponent* Owner);

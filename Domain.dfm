@@ -106,6 +106,7 @@ object domainForm: TdomainForm
     Margins.Right = 200
     Margins.Bottom = 10
     Align = alClient
+    DataSource = DM.domainSource
     Font.Charset = RUSSIAN_CHARSET
     Font.Color = clWindowText
     Font.Height = -11

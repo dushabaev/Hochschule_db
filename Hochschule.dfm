@@ -5,7 +5,7 @@ inherited hochForm: ThochForm
   OnCreate = FormCreate
   OnShow = FormShow
   ExplicitWidth = 1082
-  ExplicitHeight = 647
+  ExplicitHeight = 648
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel [0]
@@ -166,7 +166,7 @@ inherited hochForm: ThochForm
       466)
     object regionFilter: TComboBox
       Left = 88
-      Top = 52
+      Top = 50
       Width = 142
       Height = 21
       TabOrder = 0
@@ -195,7 +195,6 @@ inherited hochForm: ThochForm
       Width = 142
       Height = 21
       TabOrder = 3
-      OnChange = filterChange
     end
     object accrLevelFilterCheckBox: TCheckBox
       Left = 48
@@ -264,7 +263,6 @@ inherited hochForm: ThochForm
       Width = 142
       Height = 21
       TabOrder = 8
-      OnChange = filterChange
     end
     object autoFilterCheckBox: TCheckBox
       Left = 69
@@ -286,10 +284,12 @@ inherited hochForm: ThochForm
     OnChange = lowBoundChange
   end
   object highBound: TComboBox
+    Tag = -1
     Left = 940
     Top = 62
     Width = 46
     Height = 21
     TabOrder = 8
+    OnChange = highBoundChange
   end
 end

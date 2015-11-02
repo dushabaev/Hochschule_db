@@ -253,9 +253,19 @@ void __fastcall ThochForm::filterChange(TObject *Sender) {
 	v.push_back(settlementFilter);
 	refreshSettlement(v, regionFilter->Text);
 	settlementFilter->ItemIndex = 0;
-	if (autoFilterCheckBox->Checked) {
-		DBGrid1->DataSource->DataSet->Filtered = false;
-		DBGrid1->DataSource->DataSet->Filtered = true;
+	
+	if (autoFilterCheckBox->Checked && regionCheckBox->Checked) {
+		TDataSet* ds = DBGrid1->DataSource->DataSet;
+		
+		ds->Filtered = false;
+
+		if (ds->Filter.Length() != 0)
+			ds->Filter += " AND ";
+			
+		ds->Filter += "region = '" +regionFilter->Text + "'";
+
+		ds->Filtered = true;
+		
 	}
 }
 // ---------------------------------------------------------------------------
@@ -399,9 +409,10 @@ void __fastcall ThochForm::FormShow(TObject *Sender) {
 
 	// ------------------------------------------------------------------------------
 	Q->SQL->Text =
-		"SELECT settlement.name FROM place JOIN (settlement, region) ON (settlement_id=settlement.id AND region_id = region.id) WHERE region.name=:Region ORDER BY settlement.name";
+		"SELECT settlement.name FROM place JOIN (settlement, region) ON (settlement_id=settlement.id AND region_id = region.id) WHERE region.name=:region ORDER BY settlement.name";
 	for (unsigned int i = 0; i < 2; i++) {
-		Q->Parameters->ParamByName("Region")->Value = selectedItem(comboBox[i]);
+		Q->Parameters->ParamByName("region")->DataType = ftWideString;
+		Q->Parameters->ParamByName("region")->Value = selectedItem(comboBox[i]);
 		fetchQuery(Q, &comboBox[i + 2], 1);
 	}
 	settlementFilter->ItemIndex = 0;
@@ -436,21 +447,45 @@ void __fastcall ThochForm::settlementCheckBoxClick(TObject *Sender) {
 void __fastcall ThochForm::lowBoundChange(TObject *Sender) {
 	TComboBox *sender = (TComboBox*)Sender, *cmb = sender->Tag == -1 ?
 		highBound : comboBoxes[sender->Tag + 1];
-    int index = cmb->ItemIndex;
+	UnicodeString item = selectedItem(cmb);
+
 	cmb->Clear();
 	for (int i = StrToInt(selectedItem(sender)); i <= sender->Items->Count; i++)
 	{
 		cmb->Items->Add(IntToStr(i));
 	}
-
-	cmb->ItemIndex = index >= sender->ItemIndex ? sender->ItemIndex : index;
+	cmb->ItemIndex = StrToInt(selectedItem(sender)) >= StrToInt(item) ? 0 :
+		cmb->Items->IndexOf(item);
 
 	if (sender->Tag == -1) {
-		DBGrid1->DataSource->DataSet->FieldByName("accr_level_low")->AsString =
-			selectedItem(sender);
+		TDataSet* ds = DBGrid1->DataSource->DataSet;
 
-		DBGrid1->DataSource->DataSet->FieldByName("accr_level_high")->AsString =
-			selectedItem(cmb);
+		if (ds->FieldByName("accr_level_low")->AsString != selectedItem(sender))
+		{
+			ds->Edit();
+			ds->FieldByName("accr_level_low")->AsString = selectedItem(sender);
+			ds->Post();
+		}
+		
+		cmb->OnChange(cmb);
 	}
 }
 // ---------------------------------------------------------------------------
+
+void __fastcall ThochForm::highBoundChange(TObject *Sender)
+{
+	TComboBox *sender = (TComboBox*)Sender;
+	TDataSet* ds = DBGrid1->DataSource->DataSet;
+	
+	if (sender->Tag == -1) {
+		if (ds->FieldByName("accr_level_high")->AsString != selectedItem(sender))
+		{
+			ds->Edit();
+			ds->FieldByName("accr_level_high")->AsString = selectedItem(sender);
+			ds->Post();
+		}
+	}
+
+}
+//---------------------------------------------------------------------------
+

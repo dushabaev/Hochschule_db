@@ -5,10 +5,10 @@ inherited placeForm: TplaceForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited DBGrid1: TDBGrid
-    DataSource = Tables.placeSource
+    DataSource = DM.placeSource
   end
   inherited DBNavigator1: TDBNavigator
-    DataSource = Tables.placeSource
+    DataSource = DM.placeSource
     Hints.Strings = ()
   end
 end

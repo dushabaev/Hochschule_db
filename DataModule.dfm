@@ -99,7 +99,6 @@ object DM: TDM
     Connection = ADOConnection
     CursorType = ctStatic
     AfterScroll = hochschuleAfterScroll
-    OnFilterRecord = hochschuleFilterRecord
     TableName = 'hochschule'
     Left = 504
     Top = 72
