@@ -99,6 +99,7 @@ object DM: TDM
     Connection = ADOConnection
     CursorType = ctStatic
     AfterScroll = hochschuleAfterScroll
+    OnFilterRecord = hochschuleFilterRecord
     TableName = 'hochschule'
     Left = 504
     Top = 72
@@ -452,6 +453,21 @@ object DM: TDM
     TableName = 'struct_unit_spec_stud_type'
     Left = 392
     Top = 192
+    object structUnitSpecStudstruct_unit_and_spec_id: TIntegerField
+      FieldName = 'struct_unit_and_spec_id'
+    end
+    object structUnitSpecStudstudying_type_id: TIntegerField
+      FieldName = 'studying_type_id'
+    end
+    object structUnitSpecStudstudying_type_lookup: TWideStringField
+      FieldKind = fkLookup
+      FieldName = 'studying_type_lookup'
+      LookupDataSet = studyingType
+      LookupKeyFields = 'id'
+      LookupResultField = 'name'
+      KeyFields = 'studying_type_id'
+      Lookup = True
+    end
   end
   object structUnitType: TADOTable
     Active = True

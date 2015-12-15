@@ -113,7 +113,7 @@ object Navigation: TNavigation
     OnClick = specBtnClick
   end
   object structUnitSpecStudBtn: TButton
-    Left = 599
+    Left = 596
     Top = 39
     Width = 396
     Height = 25

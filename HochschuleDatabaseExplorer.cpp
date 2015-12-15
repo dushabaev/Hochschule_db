@@ -4,25 +4,26 @@
 #pragma hdrstop
 #include <tchar.h>
 //---------------------------------------------------------------------------
-USEFORM("Speciality.cpp", specialityForm);
-USEFORM("StructUnit.cpp", structUnitForm);
 USEFORM("Settlement.cpp", settlementForm);
-USEFORM("Region.cpp", regionForm);
+USEFORM("Speciality.cpp", specialityForm);
 USEFORM("searchSettings.cpp", searchSettingsForm);
+USEFORM("Place.cpp", placeForm);
+USEFORM("Region.cpp", regionForm);
+USEFORM("StructUnit.cpp", structUnitForm);
 USEFORM("StudyingType.cpp", sutdyingTypeForm);
 USEFORM("template.cpp", templateForm);
 USEFORM("StructUnitType.cpp", structUnitTypeForm);
 USEFORM("StructUnitSpec.cpp", structUnitSpecForm);
 USEFORM("StructUnitSpecStud.cpp", structUnitSpecStudForm);
-USEFORM("Place.cpp", placeForm);
 USEFORM("HochLevel.cpp", accrLevelForm);
-USEFORM("Hochschule.cpp", hochForm);
 USEFORM("EduLevel.cpp", eduLevelForm);
 USEFORM("DataModule.cpp", DM); /* TDataModule: File Type */
 USEFORM("Domain.cpp", domainForm);
+USEFORM("Hochschule.cpp", hochForm);
 USEFORM("MainUnit.cpp", MainForm);
 USEFORM("NavigationUnit.cpp", Navigation);
 USEFORM("HochType.cpp", hochTypeForm);
+USEFORM("SignIn.cpp", SignInForm);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -49,6 +50,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->CreateForm(__classid(ThochTypeForm), &hochTypeForm);
 		Application->CreateForm(__classid(TaccrLevelForm), &accrLevelForm);
 		Application->CreateForm(__classid(TsearchSettingsForm), &searchSettingsForm);
+		Application->CreateForm(__classid(TSignInForm), &SignInForm);
 		Application->Run();
 	}
 	catch (Exception &exception)

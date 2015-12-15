@@ -86,6 +86,7 @@ void ThochForm::refreshSettlement(vector<TComboBox*>CB, UnicodeString value) {
 }
 
 void __fastcall ThochForm::FormCreate(TObject *Sender) {
+	Memo = new TMemo(Handle);
 	partialKeyCheckBox->Checked = true;
 	caseIsnensetiveCheckBox->Checked = true;
 	LOpts << loPartialKey << loCaseInsensitive;
@@ -207,14 +208,8 @@ void __fastcall ThochForm::hochSearchBoxInvokeSearch(TObject *Sender) {
 			notFound->Visible = false;
 	}
 	else {
-		DM->hochFilterRows = 0;
-		DBGrid1->DataSource->DataSet->Filtered = false;
-		DBGrid1->DataSource->DataSet->Filtered = true;
-		if (DM->hochFilterRows == 0 && hochSearchBox->Text != "") {
-			notFound->Visible = true;
-		}
-		else
-			notFound->Visible = false;
+		applyFiltersBtnClick(Sender);
+		notFound->Visible = hochSearchBox->Text != "";
 	}
 }
 // ---------------------------------------------------------------------------
@@ -242,9 +237,9 @@ void __fastcall ThochForm::locateRBClick(TObject *Sender) {
 
 void __fastcall ThochForm::applyFiltersBtnClick(TObject *Sender) {
 	TDataSet* mainTable = DBGrid1->DataSource->DataSet;
-	DM->hochFilterRows = 0;
-	mainTable->Filtered = false;
-	mainTable->Filtered = true;
+	Memo->Clear();
+	this->ActivityIndicator1->Animate = true;
+	Filter* F = new Filter(false, this);
 }
 // ---------------------------------------------------------------------------
 
@@ -255,16 +250,17 @@ void __fastcall ThochForm::filterChange(TObject *Sender) {
 	settlementFilter->ItemIndex = 0;
 	
 	if (autoFilterCheckBox->Checked && regionCheckBox->Checked) {
-		TDataSet* ds = DBGrid1->DataSource->DataSet;
-		
-		ds->Filtered = false;
-
-		if (ds->Filter.Length() != 0)
-			ds->Filter += " AND ";
-			
-		ds->Filter += "region = '" +regionFilter->Text + "'";
-
-		ds->Filtered = true;
+		applyFiltersBtnClick(Sender);
+		        /*
+            TDataSet* ds = DBGrid1->DataSource->DataSet;
+            		Memo->Clear();
+            		ds->Filtered = false;
+            		ds->Filtered = true;
+            		if (Memo->Lines->Count > 0)
+            			setComboBoxesState(true);
+					else
+						setComboBoxesState(false);
+        */
 		
 	}
 }
@@ -309,6 +305,7 @@ void __fastcall ThochForm::delButtonClick(TObject *Sender) {
 	if (buttons.size() == 1) {
 		buttons[0]->Enabled = false;
 	}
+	applyFiltersBtnClick(Sender);
 }
 
 void __fastcall ThochForm::addButtonClick(TObject *Sender) {
@@ -366,6 +363,7 @@ void __fastcall ThochForm::addButtonClick(TObject *Sender) {
 
 	addButton->Top += 30;
 	f(comboBoxes[comboBoxes.size() - 2], comboBoxes[comboBoxes.size() - 1]);
+	applyFiltersBtnClick(Sender);
 }
 
 void ThochForm::f(TComboBox* lowBound, TComboBox* highBound) {
@@ -392,6 +390,7 @@ void ThochForm::f(TComboBox* lowBound, TComboBox* highBound) {
 	lowBound->ItemIndex = minAccrLevel - 1;
 	highBound->ItemIndex = maxAccrLevel - 1;
 	lowBound->OnChange = lowBoundChange;
+	highBound->OnChange = highBoundChange;
 }
 
 // ---------------------------------------------------------------------------
@@ -410,11 +409,14 @@ void __fastcall ThochForm::FormShow(TObject *Sender) {
 	// ------------------------------------------------------------------------------
 	Q->SQL->Text =
 		"SELECT settlement.name FROM place JOIN (settlement, region) ON (settlement_id=settlement.id AND region_id = region.id) WHERE region.name=:region ORDER BY settlement.name";
+	Q->Parameters->ParamByName("region")->DataType = ftWideString;
 	for (unsigned int i = 0; i < 2; i++) {
-		Q->Parameters->ParamByName("region")->DataType = ftWideString;
 		Q->Parameters->ParamByName("region")->Value = selectedItem(comboBox[i]);
 		fetchQuery(Q, &comboBox[i + 2], 1);
 	}
+
+	filterChange(regionFilter);
+
 	settlementFilter->ItemIndex = 0;
 	settlement->ItemIndex = settlement->Items->IndexOf
 		(DBGrid1->DataSource->DataSet->FieldByName("settlement")->AsString);
@@ -432,15 +434,26 @@ void __fastcall ThochForm::FormShow(TObject *Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall ThochForm::autoFilterCheckBoxClick(TObject *Sender) {
-	applyFiltersBtn->Enabled = !autoFilterCheckBox->Enabled;
-
-	DBGrid1->DataSource->DataSet->Filtered = false;
-	DBGrid1->DataSource->DataSet->Filtered = true;
+	applyFiltersBtn->Enabled = !autoFilterCheckBox->Checked;
+	if (autoFilterCheckBox->Checked) {
+		applyFiltersBtnClick(Sender);
+	    /*
+        	Memo->Clear();
+        		DBGrid1->DataSource->DataSet->Filtered = false;
+        		DBGrid1->DataSource->DataSet->Filtered = true;
+        		if (Memo->Lines->Count > 0)
+        			setComboBoxesState(true);
+        		else
+					setComboBoxesState(false);
+    */
+    }
 }
 // ---------------------------------------------------------------------------
 
 void __fastcall ThochForm::settlementCheckBoxClick(TObject *Sender) {
-	regionCheckBox->Checked = true;
+	if (settlementCheckBox->Checked)
+		regionCheckBox->Checked = true;
+	regionCheckBoxClick(Sender);
 }
 
 // ---------------------------------------------------------------------------
@@ -456,10 +469,8 @@ void __fastcall ThochForm::lowBoundChange(TObject *Sender) {
 	}
 	cmb->ItemIndex = StrToInt(selectedItem(sender)) >= StrToInt(item) ? 0 :
 		cmb->Items->IndexOf(item);
-
+	TDataSet* ds = DBGrid1->DataSource->DataSet;
 	if (sender->Tag == -1) {
-		TDataSet* ds = DBGrid1->DataSource->DataSet;
-
 		if (ds->FieldByName("accr_level_low")->AsString != selectedItem(sender))
 		{
 			ds->Edit();
@@ -469,6 +480,20 @@ void __fastcall ThochForm::lowBoundChange(TObject *Sender) {
 		
 		cmb->OnChange(cmb);
 	}
+	else{
+		if (autoFilterCheckBox->Checked) {
+			applyFiltersBtnClick(Sender);
+			            /*
+                Memo->Clear();
+                			ds->Filtered = false;
+                			ds->Filtered = true;
+                			if (Memo->Lines->Count > 0)
+                				setComboBoxesState(true);
+                			else
+								setComboBoxesState(false);
+            */
+		}
+    }
 }
 // ---------------------------------------------------------------------------
 
@@ -485,7 +510,144 @@ void __fastcall ThochForm::highBoundChange(TObject *Sender)
 			ds->Post();
 		}
 	}
+	else{
+		if (autoFilterCheckBox->Checked) {
+			applyFiltersBtnClick(Sender);
+			            /*
+                Memo->Clear();
+                			ds->Filtered = false;
+                			ds->Filtered = true;
+                			if (Memo->Lines->Count > 0)
+                				setComboBoxesState(true);
+                			else
+								setComboBoxesState(false);
+            */
+		}
+    }
 
+}
+//---------------------------------------------------------------------------
+
+void __fastcall ThochForm::settlementFilterChange(TObject *Sender)
+{
+	if (autoFilterCheckBox->Checked && settlementCheckBox->Checked) {
+		applyFiltersBtnClick(Sender);
+		        /*
+            TDataSet* ds = DBGrid1->DataSource->DataSet;
+            		Memo->Clear();
+            		ds->Filtered = false;
+            		ds->Filtered = true;
+            		if (Memo->Lines->Count > 0)
+            			setComboBoxesState(true);
+              		else
+						setComboBoxesState(false);
+        */
+		
+	}	
+}
+//---------------------------------------------------------------------------
+
+void __fastcall ThochForm::hochTypeFilterChange(TObject *Sender)
+{
+	if (autoFilterCheckBox->Checked && typeCheckBox->Checked) {
+		applyFiltersBtnClick(Sender);
+		        /*
+            TDataSet* ds = DBGrid1->DataSource->DataSet;
+            		Memo->Clear();
+            		ds->Filtered = false;
+            		ds->Filtered = true;
+            		if (Memo->Lines->Count > 0)
+            			setComboBoxesState(true);
+              		else
+						setComboBoxesState(false);
+        */
+		
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall ThochForm::regionCheckBoxClick(TObject *Sender)
+{
+	if (autoFilterCheckBox->Checked) {
+		applyFiltersBtnClick(Sender);
+		        /*
+            TDataSet* ds = DBGrid1->DataSource->DataSet;
+            		Memo->Clear();
+            		ds->Filtered = false;
+            		ds->Filtered = true;
+            		if (Memo->Lines->Count > 0)
+            			setComboBoxesState(true);
+              		else
+						setComboBoxesState(false);
+        */
+		
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall ThochForm::typeCheckBoxClick(TObject *Sender)
+{
+	if (autoFilterCheckBox->Checked) {
+		applyFiltersBtnClick(Sender);	
+		        /*
+            TDataSet* ds = DBGrid1->DataSource->DataSet;	
+            		Memo->Clear();
+            		ds->Filtered = false;
+            		ds->Filtered = true;
+            		if (Memo->Lines->Count > 0)
+            			setComboBoxesState(true);
+					else
+						setComboBoxesState(false);
+        */
+		
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall ThochForm::accrLevelFilterCheckBoxClick(TObject *Sender)
+{
+	if (autoFilterCheckBox->Checked) {
+		applyFiltersBtnClick(Sender);
+				/*
+            TDataSet* ds = DBGrid1->DataSource->DataSet;
+            		Memo->Clear();
+            		ds->Filtered = false;
+            		ds->Filtered = true;
+            		if (Memo->Lines->Count > 0)
+            			setComboBoxesState(true);
+              		else
+						setComboBoxesState(false);    
+        */
+		
+	}	
+}
+//---------------------------------------------------------------------------
+
+void __fastcall ThochForm::partialRangesClick(TObject *Sender)
+{
+	accrLevelFilterCheckBoxClick(Sender);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall ThochForm::Save1Click(TObject *Sender)
+{
+	if (SaveDialog1->Execute()) {
+		Memo->Lines->SaveToFile(SaveDialog1->FileName);
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void ThochForm::setComboBoxesState(bool state){
+	region->Enabled = state;
+	settlement->Enabled = state;
+	lowBound->Enabled = state;
+	highBound->Enabled = state;
+}
+void __fastcall ThochForm::FormDestroy(TObject *Sender)
+{
+	delete Memo;
 }
 //---------------------------------------------------------------------------
 

@@ -5,10 +5,9 @@ inherited structUnitSpecStudForm: TstructUnitSpecStudForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited DBGrid1: TDBGrid
-    DataSource = Tables.structUnitSpecStudSource
+    DataSource = DM.structUnitSpecStudSource
   end
   inherited DBNavigator1: TDBNavigator
-    DataSource = Tables.structUnitSpecStudSource
     Hints.Strings = ()
   end
 end

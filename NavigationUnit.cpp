@@ -20,11 +20,33 @@
 #include "StructUnitSpecStud.h"
 #include "StructUnitType.h"
 #include "StudyingType.h"
+#include "SignIn.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 TNavigation *Navigation;
+
+enum class User {
+	Anonymous, EduSecretary, Admin, None
+};
+
+User SignIn(TSignInForm* Form){
+	if (Form->ShowModal() != mrOk)
+		return User::None;
+
+	if (Form->UserName == "anonymous")
+		return User::Anonymous;
+
+	if (Form->UserName == "edu" && Form->Password == "edu")
+		return User::EduSecretary;
+
+	if (Form->UserName == "admin" && Form->Password == "admin")
+		return User::Admin;
+
+	return None;
+}
+
 //---------------------------------------------------------------------------
 __fastcall TNavigation::TNavigation(TComponent* Owner)
 	: TForm(Owner)
@@ -35,7 +57,17 @@ __fastcall TNavigation::TNavigation(TComponent* Owner)
 
 void __fastcall TNavigation::domainBtnClick(TObject *Sender)
 {
-	domainForm->Show();
+	switch (SignIn(SignInForm)) {
+	case User::Anonymous:
+		domainForm->Show();
+		break;
+	case User::EduSecretary:
+		domainForm->Show();
+		break;
+	case User::Admin:
+		domainForm->Show();
+		break;
+	}
 }
 //---------------------------------------------------------------------------
 
@@ -115,7 +147,17 @@ void __fastcall TNavigation::eduLvlBtnClick(TObject *Sender)
 
 void __fastcall TNavigation::hochBtnClick(TObject *Sender)
 {
-	hochForm->Show();
+	switch (SignIn(SignInForm)) {
+	case User::Anonymous:
+		hochForm->Show();
+		hochForm->DBGrid1->ReadOnly = true;
+		hochForm->setComboBoxesState(false);
+		break;
+	case User::EduSecretary:
+	case User::Admin:
+		hochForm->Show();
+		break;
+	}
 }
 //---------------------------------------------------------------------------
 

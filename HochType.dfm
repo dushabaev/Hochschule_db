@@ -5,10 +5,10 @@ inherited hochTypeForm: ThochTypeForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited DBGrid1: TDBGrid
-    DataSource = Tables.hochTypeSource
+    DataSource = DM.hochTypeSource
   end
   inherited DBNavigator1: TDBNavigator
-    DataSource = Tables.hochTypeSource
+    DataSource = DM.hochTypeSource
     Hints.Strings = ()
   end
 end

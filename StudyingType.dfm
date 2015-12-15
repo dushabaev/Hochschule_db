@@ -5,10 +5,10 @@ inherited sutdyingTypeForm: TsutdyingTypeForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited DBGrid1: TDBGrid
-    DataSource = Tables.studyingTypeSource
+    DataSource = DM.studyingTypeSource
   end
   inherited DBNavigator1: TDBNavigator
-    DataSource = Tables.studyingTypeSource
+    DataSource = DM.studyingTypeSource
     Hints.Strings = ()
   end
 end

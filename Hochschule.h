@@ -17,6 +17,9 @@
 #include <Vcl.WinXCtrls.hpp>
 #include <Vcl.Buttons.hpp>
 #include <Vcl.ComCtrls.hpp>
+#include <Vcl.Menus.hpp>
+#include <Vcl.Dialogs.hpp>
+#include "FilterThread.h"
 #include <vector>
 //---------------------------------------------------------------------------
 class ThochForm : public TtemplateForm
@@ -50,7 +53,12 @@ __published:	// IDE-managed Components
 	TComboBox *highBound;
 	TLabel *Label4;
 	TLabel *Label5;
-	TCheckBox *equalRanges;
+	TCheckBox *partialRanges;
+	TMainMenu *MainMenu1;
+	TMenuItem *able1;
+	TMenuItem *Save1;
+	TSaveDialog *SaveDialog1;
+	TActivityIndicator *ActivityIndicator1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall regionChange(TObject *Sender);
 	void __fastcall settlementChange(TObject *Sender);
@@ -69,6 +77,14 @@ __published:	// IDE-managed Components
 	void __fastcall settlementCheckBoxClick(TObject *Sender);
 	void __fastcall lowBoundChange(TObject *Sender);
 	void __fastcall highBoundChange(TObject *Sender);
+	void __fastcall settlementFilterChange(TObject *Sender);
+	void __fastcall hochTypeFilterChange(TObject *Sender);
+	void __fastcall regionCheckBoxClick(TObject *Sender);
+	void __fastcall typeCheckBoxClick(TObject *Sender);
+	void __fastcall accrLevelFilterCheckBoxClick(TObject *Sender);
+	void __fastcall partialRangesClick(TObject *Sender);
+	void __fastcall Save1Click(TObject *Sender);
+	void __fastcall FormDestroy(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
 	__fastcall ThochForm(TComponent* Owner);
@@ -78,6 +94,8 @@ public:		// User declarations
 
     void f(TComboBox* lowBound, TComboBox* highBound);
 
+    void setComboBoxesState(bool);
+
 	int getPlaceId();
 	TLocateOptions LOpts;
 	TFilterOptions FOpts;
@@ -85,6 +103,7 @@ public:		// User declarations
 	std::vector<TLabel*> labels;
 	std::vector<TComboBox*> comboBoxes;
 	std::vector<TButton*> buttons;
+	TMemo* Memo;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE ThochForm *hochForm;

@@ -4,10 +4,10 @@ inherited specialityForm: TspecialityForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited DBGrid1: TDBGrid
-    DataSource = Tables.specialitySource
+    DataSource = DM.specialitySource
   end
   inherited DBNavigator1: TDBNavigator
-    DataSource = Tables.specialitySource
+    DataSource = DM.specialitySource
     Hints.Strings = ()
   end
 end

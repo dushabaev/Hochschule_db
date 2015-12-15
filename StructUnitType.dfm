@@ -5,10 +5,10 @@ inherited structUnitTypeForm: TstructUnitTypeForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited DBGrid1: TDBGrid
-    DataSource = Tables.structUnitTypeSource
+    DataSource = DM.structUnitTypeSource
   end
   inherited DBNavigator1: TDBNavigator
-    DataSource = Tables.structUnitTypeSource
+    DataSource = DM.structUnitTypeSource
     Hints.Strings = ()
   end
 end

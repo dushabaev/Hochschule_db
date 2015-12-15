@@ -5,10 +5,10 @@ inherited accrLevelForm: TaccrLevelForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited DBGrid1: TDBGrid
-    DataSource = Tables.hochAndLevelSource
+    DataSource = DM.hochAndLevelSource
   end
   inherited DBNavigator1: TDBNavigator
-    DataSource = Tables.hochAndLevelSource
+    DataSource = DM.hochAndLevelSource
     Hints.Strings = ()
   end
 end

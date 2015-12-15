@@ -1,11 +1,16 @@
 inherited hochForm: ThochForm
+  Left = 195
   Caption = 'Hochschule'
   ClientHeight = 609
   ClientWidth = 1066
+  Menu = MainMenu1
+  Position = poDesigned
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
+  ExplicitTop = -46
   ExplicitWidth = 1082
-  ExplicitHeight = 648
+  ExplicitHeight = 668
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel [0]
@@ -88,7 +93,7 @@ inherited hochForm: ThochForm
     OnInvokeSearch = hochSearchBoxInvokeSearch
   end
   object region: TComboBox
-    Left = 338
+    Left = 345
     Top = 65
     Width = 145
     Height = 21
@@ -174,11 +179,12 @@ inherited hochForm: ThochForm
     end
     object regionCheckBox: TCheckBox
       Left = 10
-      Top = 54
+      Top = 50
       Width = 53
       Height = 17
       Caption = 'Region'
       TabOrder = 1
+      OnClick = regionCheckBoxClick
     end
     object settlementCheckBox: TCheckBox
       Left = 10
@@ -195,6 +201,7 @@ inherited hochForm: ThochForm
       Width = 142
       Height = 21
       TabOrder = 3
+      OnChange = settlementFilterChange
     end
     object accrLevelFilterCheckBox: TCheckBox
       Left = 48
@@ -203,6 +210,7 @@ inherited hochForm: ThochForm
       Height = 15
       Caption = 'Accrediatational level'
       TabOrder = 4
+      OnClick = accrLevelFilterCheckBoxClick
     end
     object applyFiltersBtn: TButton
       Left = 2
@@ -240,13 +248,16 @@ inherited hochForm: ThochForm
         TabOrder = 0
         OnClick = addButtonClick
       end
-      object equalRanges: TCheckBox
+      object partialRanges: TCheckBox
         Left = 11
         Top = 1
         Width = 108
         Height = 17
-        Caption = 'Fully equal ranges'
+        Caption = 'Partial ranges'
+        Checked = True
+        State = cbChecked
         TabOrder = 1
+        OnClick = partialRangesClick
       end
     end
     object typeCheckBox: TCheckBox
@@ -256,6 +267,7 @@ inherited hochForm: ThochForm
       Height = 17
       Caption = 'Type'
       TabOrder = 7
+      OnClick = typeCheckBoxClick
     end
     object hochTypeFilter: TComboBox
       Left = 88
@@ -263,10 +275,11 @@ inherited hochForm: ThochForm
       Width = 142
       Height = 21
       TabOrder = 8
+      OnChange = hochTypeFilterChange
     end
     object autoFilterCheckBox: TCheckBox
       Left = 69
-      Top = 24
+      Top = 27
       Width = 65
       Height = 17
       Caption = 'Auto filter'
@@ -291,5 +304,30 @@ inherited hochForm: ThochForm
     Height = 21
     TabOrder = 8
     OnChange = highBoundChange
+  end
+  object ActivityIndicator1: TActivityIndicator
+    Left = 199
+    Top = 30
+    IndicatorSize = aisLarge
+  end
+  object MainMenu1: TMainMenu
+    Left = 1032
+    Top = 32
+    object able1: TMenuItem
+      Caption = 'Table'
+      object Save1: TMenuItem
+        Caption = 'Save'
+        ShortCut = 16467
+        OnClick = Save1Click
+      end
+    end
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = 'txt'
+    FileName = 'Table'
+    Filter = 'Table (*.txt)|*.TXT'
+    Title = 'Save table'
+    Left = 1032
+    Top = 80
   end
 end

@@ -115,6 +115,9 @@ __published:	// IDE-managed Components
 	TIntegerField *hochschulesettlement_id;
 	TIntegerField *hochschuleaccr_level_low;
 	TIntegerField *hochschuleaccr_level_high;
+	TIntegerField *structUnitSpecStudstruct_unit_and_spec_id;
+	TIntegerField *structUnitSpecStudstudying_type_id;
+	TWideStringField *structUnitSpecStudstudying_type_lookup;
 	void __fastcall DataModuleDestroy(TObject *Sender);
 	void __fastcall DataModuleCreate(TObject *Sender);
 	void __fastcall structUnitSpecAfterScroll(TDataSet *DataSet);

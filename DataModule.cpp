@@ -75,6 +75,10 @@ void __fastcall TDM::structUnitSpecAfterScroll(TDataSet *DataSet) {
 
 void __fastcall TDM::hochschuleFilterRecord(TDataSet *DataSet, bool &Accept) {
 	Accept = true;
+	if (!hochForm) {
+        return;
+	}
+	// Filter by name
 	if (hochForm->filterRB->Checked)
 		if (hochForm->FOpts.Contains(foCaseInsensitive))
 			if (hochForm->FOpts.Contains(foNoPartialCompare))
@@ -95,15 +99,60 @@ void __fastcall TDM::hochschuleFilterRecord(TDataSet *DataSet, bool &Accept) {
 				(hochForm->hochSearchBox->Text) == 0 ||
 				hochForm->hochSearchBox->Text == "";
 
-	Accept = Accept && (!hochForm->regionCheckBox->Checked ||
-		DataSet->FieldByName("region")
-		->AsString == hochForm->regionFilter->Text) &&
-		(!hochForm->settlementCheckBox->Checked || DataSet->FieldByName
-		("settlement")->AsString == hochForm->settlementFilter->Text) &&
-		(!hochForm->typeCheckBox->Checked || DataSet->FieldByName
-		("hoch_type_lookup")->AsString == hochForm->hochTypeFilter->Text);
+	// Filter by other categories
+	Accept = Accept &&
+		// Region
+		(!hochForm->regionCheckBox->Checked ||
+		DataSet->FieldByName("region")->AsString ==
+		hochForm->regionFilter->Text) &&
+
+		// Setllement
+		(!hochForm->settlementCheckBox->Checked ||
+		DataSet->FieldByName("settlement")->AsString ==
+		hochForm->settlementFilter->Text) &&
+
+		// Hochschule type
+		(!hochForm->typeCheckBox->Checked ||
+		DataSet->FieldByName("hoch_type_lookup")->AsString ==
+		hochForm->hochTypeFilter->Text);
+
+	if (Accept && hochForm->accrLevelFilterCheckBox->Checked) {
+		if (hochForm->partialRanges->Checked) {
+			for (int i = 0; Accept && i < hochForm->comboBoxes.size(); i+=2) {
+				Accept = Accept && 
+				// Is lower bound in range ?
+				(DataSet->FieldByName("accr_level_low")->AsInteger >=
+				StrToInt(hochForm->comboBoxes[i]->Text) &&
+				DataSet->FieldByName("accr_level_low")->AsInteger <=
+				StrToInt(hochForm->comboBoxes[i+1]->Text) ||
+
+				// Is upper bound in range ?
+				DataSet->FieldByName("accr_level_high")->AsInteger >=
+				StrToInt(hochForm->comboBoxes[i]->Text) &&
+				DataSet->FieldByName("accr_level_high")->AsInteger <=
+				StrToInt(hochForm->comboBoxes[i+1]->Text));
+			}
+		}
+		else{
+			for (int i = 0; Accept && i < hochForm->comboBoxes.size(); i+=2) {
+				Accept = Accept && 
+				DataSet->FieldByName("accr_level_low")->Text ==
+				hochForm->comboBoxes[i]->Text &&
+				DataSet->FieldByName("accr_level_high")->Text ==
+				hochForm->comboBoxes[i+1]->Text;
+			}
+        }
+	}
+
 	if (Accept) {
 		++hochFilterRows;
+		UnicodeString str="";
+		for (int i = 0; i < DataSet->FieldCount-1; i++)
+			str += DataSet->Fields->Fields[i]->Text + ";";
+		if (DataSet->FieldCount-1 >= 0) {
+			str += DataSet->Fields->Fields[DataSet->FieldCount-1]->Text;
+		}
+		hochForm->Memo->Lines->Add(str);
 	}
 
 }
@@ -111,7 +160,7 @@ void __fastcall TDM::hochschuleFilterRecord(TDataSet *DataSet, bool &Accept) {
 
 void __fastcall TDM::hochschuleAfterScroll(TDataSet * DataSet) {
 	ThochForm* form = hochForm;
-	if (!form)
+	if (!form || form->Memo->Lines->Count <= 0)
 		return;
 
 	form->region->ItemIndex = form->region->Items->IndexOf
@@ -121,5 +170,7 @@ void __fastcall TDM::hochschuleAfterScroll(TDataSet * DataSet) {
 	form->lowBound->ItemIndex = DataSet->FieldByName("accr_level_low")->AsInteger-1;
 	form->lowBoundChange(form->lowBound);
 
+	form->highBound->ItemIndex = DataSet->FieldByName("accr_level_high")->AsInteger-1;
 }
 // ---------------------------------------------------------------------------
+

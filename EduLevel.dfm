@@ -24,7 +24,7 @@ object eduLevelForm: TeduLevelForm
     Margins.Right = 5
     Margins.Bottom = 0
     Align = alClient
-    DataSource = Tables.eduLevelSource
+    DataSource = DM.eduLevelSource
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -40,7 +40,7 @@ object eduLevelForm: TeduLevelForm
     Height = 25
     Margins.Left = 5
     Margins.Right = 5
-    DataSource = Tables.eduLevelSource
+    DataSource = DM.eduLevelSource
     Align = alBottom
     Flat = True
     TabOrder = 1

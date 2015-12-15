@@ -5,10 +5,10 @@ inherited settlementForm: TsettlementForm
   PixelsPerInch = 96
   TextHeight = 13
   inherited DBGrid1: TDBGrid
-    DataSource = Tables.settlementSource
+    DataSource = DM.settlementSource
   end
   inherited DBNavigator1: TDBNavigator
-    DataSource = Tables.settlementSource
+    DataSource = DM.settlementSource
     Hints.Strings = ()
   end
 end
